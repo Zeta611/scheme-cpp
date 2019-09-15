@@ -87,11 +87,16 @@ int interpreter::_read()
     // If the token is a left parenthesis, recursively set `left` of the node
     // and put it back, since `_read` begins parsing from a left parenthesis;
     // Otherwise set `left` as a negative hash value.
-    node& current_node = _node_pool.get_node(current_node_index);
     if (tok == parenthesis::left) {
       _tokenizer.put_back();
-      current_node.left = _read();
+      int index = _read();
+
+      // `current_node` is assigned here, as `_node_pool` can create a new
+      // array while performing `reserve_capacity`.
+      node& current_node = _node_pool.get_node(current_node_index);
+      current_node.left = index;
     } else {
+      node& current_node = _node_pool.get_node(current_node_index);
       current_node.left = -token_hash_value;
     }
   }

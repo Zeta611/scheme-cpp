@@ -104,6 +104,7 @@ void node_pool::reserve_capacity(int minimum_capacity)
   capacity = minimum_capacity;
 }
 
+
 std::ostream& operator<<(std::ostream& stream, const node_pool& pool)
 {
   auto center = [=](std::string input, int width) {
@@ -145,6 +146,6 @@ std::ostream& operator<<(std::ostream& stream, const node_pool& pool)
            << center(right, 13)
            << "|\n";
   }
-  stream << "+----------------+----------------+\n";
+  stream << "+-----+-------------+-------------+\n";
   return stream;
 }
