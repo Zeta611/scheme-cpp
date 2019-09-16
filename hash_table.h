@@ -2,7 +2,6 @@
 #define HASH_TABLE_H
 #include <iostream>
 #include <string>
-#include <stdexcept>
 
 template<typename T>
 class hash_table {

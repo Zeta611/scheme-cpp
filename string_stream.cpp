@@ -1,5 +1,4 @@
 #include "string_stream.h"
-#include <iostream>
 
 string_stream::string_stream(std::string str)
   : str{str} {}

@@ -2,6 +2,7 @@
 #include <string>
 #include "test.h"
 #include "hash_table.h"
+#include "node.h"
 #include "node_pool.h"
 #include "string_stream.h"
 #include "tokenizer.h"

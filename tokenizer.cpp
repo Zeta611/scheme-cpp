@@ -1,5 +1,4 @@
 #include "tokenizer.h"
-#include <iostream>
 
 tokenizer::tokenizer(string_stream stream)
   : stream{stream} {}

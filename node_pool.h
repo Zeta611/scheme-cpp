@@ -1,7 +1,8 @@
 #ifndef NODE_POOL_H
 #define NODE_POOL_H
-#include "node.h"
+#include <iosfwd>
 
+class node;
 class node_pool {
 public:
   node_pool(int capacity);

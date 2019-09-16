@@ -1,5 +1,5 @@
+#include "token_node.h"
 #include "token_list.h"
-#include <iostream>
 
 token_list::~token_list()
 {

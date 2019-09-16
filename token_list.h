@@ -1,6 +1,8 @@
 #ifndef TOKEN_LIST_H
 #define TOKEN_LIST_H
-#include "token_node.h"
+#include "token.h"
+
+class token_node;
 
 class token_list {
 public:

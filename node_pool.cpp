@@ -1,5 +1,6 @@
-#include "node_pool.h"
+#include <iostream>
 #include "node.h"
+#include "node_pool.h"
 
 node_pool::node_pool(int capacity)
   : capacity{capacity}
