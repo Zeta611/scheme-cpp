@@ -8,7 +8,7 @@ template<typename T>
 hash_table<T>::hash_table(int size)
   : size{size}
 {
-  this->table = new bucket*[size]();
+  table = new bucket*[size]();
 }
 
 
@@ -26,8 +26,8 @@ T hash_table<T>::get(std::string key)
 
   for (int i = 0; i < size; ++i) {
     int index = (hash_value + i) % size;
-    bucket* b = table[index];
-    if (key == b->key) { return b->element; }
+    bucket* bk = table[index];
+    if (key == bk->key) { return bk->element; }
   }
   throw std::runtime_error("Key does not exists.");
 }
@@ -49,18 +49,18 @@ int hash_table<T>::insert(std::string key, T element)
   // retry insertion.
   for (int i = 0; i < size; ++i) {
     int index = (hash_value + i) % size;
-    bucket*& b = table[index];
+    bucket*& bk = table[index];
 
-    // `b` is empty, so add the pair to the table.
-    if (b == nullptr) {
-      b = new bucket;
-      b->key = key;
+    // `bk` is empty, so add the pair to the table.
+    if (bk == nullptr) {
+      bk = new bucket;
+      bk->key = key;
       ++count;
     }
 
-    // `b` with such `key` exists, so update `b` with the pair.
-    if (key == b->key) {
-      b->element = element;
+    // `bk` with such `key` exists, so update `bk` with the pair.
+    if (key == bk->key) {
+      bk->element = element;
       return index;
     }
   }
@@ -77,17 +77,17 @@ int hash_table<T>::insert(std::string key)
   // retry insertion.
   for (int i = 0; i < size; ++i) {
     int index = (hash_value + i) % size;
-    bucket*& b = table[index];
+    bucket*& bk = table[index];
 
-    // `b` is empty, so add the pair to the table.
-    if (b == nullptr) {
-      b = new bucket;
-      b->key = key;
+    // `bk` is empty, so add the pair to the table.
+    if (bk == nullptr) {
+      bk = new bucket;
+      bk->key = key;
       ++count;
     }
 
-    // `b` with such `key` exists, so update `b` with the pair.
-    if (key == b->key) {
+    // `bk` with such `key` exists, so update `bk` with the pair.
+    if (key == bk->key) {
       return index;
     }
   }
@@ -122,13 +122,13 @@ std::ostream& operator<<(std::ostream& stream, const hash_table<T>& table)
          << "|   Hash Value   |     Symbol     |\n"
          << "+----------------+----------------+\n";
   for (int i = 0; i < table.size; ++i) {
-    auto b = table.table[i];
-    if (b != nullptr) {
+    auto bk = table.table[i];
+    if (bk != nullptr) {
       auto i_str = std::to_string(-i);
       stream << "|"
              << center(i_str, 16)
              << "|"
-             << center(b->key, 16)
+             << center(bk->key, 16)
              << "|\n";
     }
   }

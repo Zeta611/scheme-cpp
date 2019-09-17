@@ -12,7 +12,7 @@ public:
   void put_back();
 
 private:
-  token_list tokens;
+  token_list tl;
   int index = -1;
 
   std::string get_from_stream(token_type type);

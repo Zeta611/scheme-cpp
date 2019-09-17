@@ -10,11 +10,11 @@ public:
   void run();
 
 private:
-  tokenizer _tokenizer = tokenizer(string_stream(""));
-  node_pool _node_pool = node_pool(30);
-  hash_table<std::string> _sym_table = hash_table<std::string>(997);
+  tokenizer tok = tokenizer(string_stream(""));
+  node_pool pool = node_pool(30);
+  hash_table<std::string> sym_table = hash_table<std::string>(997);
 
-  void _preprocess();
+  void preprocess();
 
   /**
    * Recursively reads tokens from a tokenizer.
@@ -23,7 +23,7 @@ private:
    * parentheses, or the negative hash value for a single token. The index is
    * one-based, in order to identify a terminator with a zero.
    */
-  int _read();
+  int read();
 
   /**
    * Recursively prints the expression starting from the root node.
@@ -32,9 +32,9 @@ private:
    *   - start_list: A flag which indicates if the root node is at the start of
    *     the list.
    */
-  void _print(int root_node_index, bool start_list);
+  void print(int root_node_index, bool start_list);
 
-  void _print_meta(int root_node_index);
+  void print_meta(int root_node_index);
 };
 
 #endif /* ifndef INTERPRETER_H */
