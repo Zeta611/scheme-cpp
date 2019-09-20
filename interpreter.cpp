@@ -5,10 +5,11 @@
 void interpreter::run()
 {
   while (true) {
+    std::cout << "> ";
     if (tok.stream.is_empty()) {
-      std::cout << "> ";
       std::string tmp;
-      std::getline(std::cin, tmp);
+      // return if EOF.
+      if (!std::getline(std::cin, tmp)) { return; }
       tok.stream.insert_str(tmp);
     }
 
@@ -25,8 +26,8 @@ void interpreter::run()
 
     if (tok.stream.is_at_end()) {
       tok.stream.flush();
-      std::cout << "\n";
     }
+    std::cout << "\n";
   }
 }
 
