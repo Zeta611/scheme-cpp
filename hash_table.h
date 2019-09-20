@@ -1,7 +1,7 @@
 #ifndef HASH_TABLE_H
 #define HASH_TABLE_H
 #include <iostream>
-#include <string>
+#include "token.h"
 
 template<typename T>
 class hash_table {
@@ -23,7 +23,7 @@ public:
    * - Complexity: O(1) expected, worst case O(*n*), where *n* is the size of
    *   the hash table.
    */
-  T get(std::string key);
+  T get(token key);
 
   /**
    * Gets the key for the given `hash_value`.
@@ -33,7 +33,7 @@ public:
    *   if it exists.
    * - Complexity: O(1)
    */
-  std::string get_key(int hash_value);
+  token get_key(int hash_value);
 
 
   /**
@@ -50,7 +50,7 @@ public:
    * - Complexity: O(1) expected, worst case O(*n*), where *n* is the size of
    *   the hash table.
    */
-  int insert(std::string key);
+  int insert(token key);
 
   /**
    * Inserts the pair `(key, element)` to the hash table, and returns the hash
@@ -69,9 +69,12 @@ public:
    * - Complexity: O(1) expected, worst case O(*n*), where *n* is the size of
    *   the hash table.
    */
-  int insert(std::string key, T element);
+  int insert(token key, T element);
 
-  struct bucket { std::string key; T element; };
+  struct bucket {
+    token key{token::nil_token};
+    T element;
+  };
 
   template <typename U>
   friend std::ostream& operator<<(std::ostream&, const hash_table<U>&);
@@ -82,7 +85,7 @@ private:
 
   bucket** table;
 
-  int hash(std::string str);
+  int hash(token tok);
 };
 
 #include "hash_table.ipp"

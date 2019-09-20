@@ -20,7 +20,7 @@ hash_table<T>::~hash_table()
 
 
 template<typename T>
-T hash_table<T>::get(std::string key)
+T hash_table<T>::get(token key)
 {
   int hash_value = hash(key);
 
@@ -34,14 +34,14 @@ T hash_table<T>::get(std::string key)
 
 
 template<typename T>
-std::string hash_table<T>::get_key(int hash_value)
+token hash_table<T>::get_key(int hash_value)
 {
   return table[hash_value]->key;
 }
 
 
 template<typename T>
-int hash_table<T>::insert(std::string key, T element)
+int hash_table<T>::insert(token key, T element)
 {
   int hash_value = hash(key);
 
@@ -69,7 +69,7 @@ int hash_table<T>::insert(std::string key, T element)
 
 
 template<typename T>
-int hash_table<T>::insert(std::string key)
+int hash_table<T>::insert(token key)
 {
   int hash_value = hash(key);
 
@@ -96,10 +96,10 @@ int hash_table<T>::insert(std::string key)
 
 
 template<typename T>
-int hash_table<T>::hash(std::string str)
+int hash_table<T>::hash(token t)
 {
   int value = 0;
-  for (auto c : str) {
+  for (auto c : t.get_value()) {
     value += (int)c;
   }
   return value;
@@ -128,7 +128,7 @@ std::ostream& operator<<(std::ostream& stream, const hash_table<T>& table)
       stream << "|"
              << center(i_str, 16)
              << "|"
-             << center(bk->key, 16)
+             << center(bk->key.get_value(), 16)
              << "|\n";
     }
   }

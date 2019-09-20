@@ -7,7 +7,7 @@
 int main()
 {
 #ifndef NDEBUG
-  test();
+  // test();
 #endif
   interpreter().run();
 }

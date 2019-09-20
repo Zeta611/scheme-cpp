@@ -47,7 +47,7 @@ int interpreter::read()
     start_token = t;
   }
 
-  int token_hash_value = sym_table.insert(start_token.get_value());
+  int token_hash_value = sym_table.insert(start_token);
   if (token_hash_value == -1) {
     throw std::runtime_error("Symbol table is full.");
   }
@@ -72,7 +72,7 @@ int interpreter::read()
     if (t == token::nil_token || t == parenthesis::right) { break; }
     if (t.get_type() == token_type::whitespace) { continue; }
 
-    int token_hash_value = sym_table.insert(t.get_value());
+    int token_hash_value = sym_table.insert(t);
     if (token_hash_value == -1) {
       throw std::runtime_error("Symbol table is full.");
     }
@@ -112,7 +112,7 @@ void interpreter::print(int root_node_index, bool start_list)
   if (root_node_index == 0) {
     std::cout << "() ";
   } else if (root_node_index < 0) {
-    std::cout << sym_table.get_key(-root_node_index) << " ";
+    std::cout << sym_table.get_key(-root_node_index).get_value() << " ";
   } else if (root_node_index > 0) {
     if (start_list) {
       std::cout << "( ";
