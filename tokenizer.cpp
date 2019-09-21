@@ -1,4 +1,5 @@
 #include "tokenizer.h"
+#include "utils.h"
 
 tokenizer::tokenizer(string_stream stream)
   : stream{stream} {}
@@ -6,8 +7,9 @@ tokenizer::tokenizer(string_stream stream)
 
 token tokenizer::get_token()
 {
-  char c = stream.peek_char();
-  if (c == '\0') {
+  strip_whitespace();
+
+  if (stream.peek_char() == '\0') {
     return token::nil_token;
   }
 
@@ -17,37 +19,25 @@ token tokenizer::get_token()
     return tl.get_current();
   }
 
+  std::string raw_tok = get_from_stream();
+
   auto t = token::nil_token;
-  switch (c) {
-  case ' ': case '\t': case '\n':
-    t = whitespace(get_from_stream(token_type::whitespace));
-    break;
-
-  case '(': case ')':
-    t = parenthesis(get_from_stream());
-    break;
-
-  // case '0': case '1': case '2': case '3': case '4': case '5': case '6':
-  // case '7': case '8': case '9':
-  //   t = number(get_from_stream(token_type::number));
-  //   break;
-  //
-  // case '+': case '-': case '*': case '/': case '%': case '=': case '>':
-  // case '<':
-  //   t = _operator(get_from_stream());
-  //   break;
-
-  default:
-    std::string value = get_from_stream(token_type::variable);
-    if (value == "define" ||
-        value == "lambda" ||
-        value == "if" ||
-        value == "cond")
-    {
-      t = keyword(value);
-    } else {
-      t = variable(value);
-    }
+  if (raw_tok.empty()) {
+    t = token::nil_token;
+  } else if (raw_tok == "(") {
+    t = parenthesis::left;
+  } else if (raw_tok == ")") {
+    t = parenthesis::right;
+  } else if (raw_tok == "define") {
+    t = keyword::define;
+  } else if (raw_tok == "lambda") {
+    t = keyword::lambda;
+  } else if (raw_tok == "if") {
+    t = keyword::_if;
+  } else if (raw_tok == "cond") {
+    t = keyword::cond;
+  } else {
+    t = variable(raw_tok);
   }
 
   tl.append(t);
@@ -64,66 +54,52 @@ void tokenizer::put_back()
 }
 
 
-std::string tokenizer::get_from_stream(token_type type)
+std::string tokenizer::get_from_stream()
 {
   std::string buffer = "";
+  bool init_loop = true;
 
   while (true) {
     char c = stream.peek_char();
     if (c == '\0') { break; }
 
     switch (c) {
-    case ' ': case '\t': case '\n':
-      if (type != token_type::whitespace) {
-        return buffer;
-      }
-      buffer.push_back(stream.get_char());
+    case ' ': case '\t': case '\n': case '\r':
+      assert(!init_loop);
+      return buffer;
       break;
 
     case '(': case ')':
-      return buffer;
-
-    default:
-      if (type == token_type::whitespace) {
-        return buffer;
-      }
-      if (c >= 'A' && c <= 'Z') {
-        stream.get_char();
-        buffer.push_back(c - ('Z' - 'z'));
-      } else {
+      // Return parenthesis if it is found in the first loop.
+      if (init_loop) {
         buffer.push_back(stream.get_char());
       }
+      return buffer;
+
+    case 'A': case 'B': case 'C': case 'D': case 'E': case 'F': case 'G':
+    case 'H': case 'I': case 'J': case 'K': case 'L': case 'M': case 'N':
+    case 'O': case 'P': case 'Q': case 'R': case 'S': case 'T': case 'U':
+    case 'V': case 'W': case 'X': case 'Y': case 'Z':
+      {
+        int offset = 'A' - 'a';
+        buffer.push_back(stream.get_char() - offset);
+      }
       break;
-    // case '0': case '1': case '2': case '3': case '4': case '5': case '6':
-    // case '7': case '8': case '9':
-    //   if (type != token_type::number && type != token_type::variable) {
-    //     return buffer;
-    //   }
-    //   buffer.push_back(stream.get_char());
-    //   break;
-    //
-    // default:
-    //   if (type != token_type::variable && type != token_type::keyword) {
-    //     return buffer;
-    //   }
-    //   if ((c >= 'a' && c <= 'z') ||
-    //       (c >= 'A' && c <= 'Z') ||
-    //       c == '_' || c == '-')
-    //   {
-    //     buffer.push_back(stream.get_char());
-    //     break;
-    //   } else {
-    //     return buffer;
-    //   }
+
+    default:
+      buffer.push_back(stream.get_char());
+      break;
     }
+
+    init_loop = false;
   }
   return buffer;
 }
 
 
-std::string tokenizer::get_from_stream()
+void tokenizer::strip_whitespace()
 {
-  char c = stream.get_char();
-  if (c == '\0') { return ""; }
-  return std::string(1, c);
+  while (utils::is_whitespace(stream.peek_char())) {
+    stream.get_char();
+  }
 }

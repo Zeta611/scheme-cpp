@@ -15,8 +15,9 @@ private:
   token_list tl;
   int index = -1;
 
-  std::string get_from_stream(token_type type);
   std::string get_from_stream();
+
+  void strip_whitespace();
 };
 
 #endif /* ifndef TOKENIZER_H */
