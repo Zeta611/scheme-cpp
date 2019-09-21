@@ -23,13 +23,13 @@ node_pool::~node_pool()
 
 bool node_pool::is_empty()
 {
-  return size == 0;
+  return _size == 0;
 }
 
 
-int node_pool::get_size()
+int node_pool::size()
 {
-  return size;
+  return _size;
 }
 
 
@@ -47,11 +47,11 @@ int node_pool::get_free_head_index()
 
 int node_pool::allocate()
 {
-  if (size == capacity - 1) {
+  if (_size == capacity - 1) {
     reserve_capacity(capacity * 2);
   }
 
-  ++size;
+  ++_size;
   int index = free_head_index;
   auto& node = get_node(index);
 
@@ -63,7 +63,7 @@ int node_pool::allocate()
 
 void node_pool::deallocate(int index)
 {
-  --size;
+  --_size;
   auto& node = get_node(index);
 
   if (node.right > 0) {

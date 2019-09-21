@@ -12,7 +12,7 @@ public:
   hash_table(int size);
   ~hash_table();
 
-  int get_count();
+  int count();
 
   /**
    * Gets the element for the given `key`.
@@ -72,7 +72,7 @@ public:
   int insert(token key, T element);
 
   struct bucket {
-    token key{token::nil_token};
+    token key{token::nil};
     T element;
   };
 
@@ -81,7 +81,7 @@ public:
 
 private:
   const int size;
-  int count = 0;
+  int _count = 0;
 
   bucket** table;
 

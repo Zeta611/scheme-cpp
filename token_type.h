@@ -2,13 +2,10 @@
 #define TOKEN_TYPE_H
 
 enum class token_type {
+  paren,
   keyword,
-  number,
-  _operator,
-  parenthesis,
-  string,
   variable,
-  whitespace,
+  literal,
   nil
 };
 

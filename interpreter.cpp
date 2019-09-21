@@ -38,14 +38,7 @@ void interpreter::preprocess() {}
 int interpreter::read()
 {
   auto start_token = tok.get_token();
-  if (start_token == token::nil_token) { return 0; }
-
-  // Skip whitespaces
-  while (start_token.get_type() == token_type::whitespace) {
-    auto t = tok.get_token();
-    if (t == token::nil_token) { return 0; }
-    start_token = t;
-  }
+  if (start_token == token::nil) { return 0; }
 
   int token_hash_value = sym_table.insert(start_token);
   if (token_hash_value == -1) {
@@ -53,7 +46,7 @@ int interpreter::read()
   }
 
   // Immediately return the hash value of a non-parenthesis starting token.
-  if (start_token != parenthesis::left) {
+  if (start_token != token::left_paren) {
     return -token_hash_value;
   }
 
@@ -69,8 +62,7 @@ int interpreter::read()
   while (true) {
     auto t = tok.get_token();
 
-    if (t == token::nil_token || t == parenthesis::right) { break; }
-    if (t.get_type() == token_type::whitespace) { continue; }
+    if (t == token::nil || t == token::right_paren) { break; }
 
     int token_hash_value = sym_table.insert(t);
     if (token_hash_value == -1) {
@@ -90,7 +82,7 @@ int interpreter::read()
     // If the token is a left parenthesis, recursively set `left` of the node
     // and put it back, since `read` begins parsing from a left parenthesis;
     // Otherwise set `left` as a negative hash value.
-    if (t == parenthesis::left) {
+    if (t == token::left_paren) {
       tok.put_back();
       int index = read();
 
@@ -112,7 +104,7 @@ void interpreter::print(int root_node_index, bool start_list)
   if (root_node_index == 0) {
     std::cout << "() ";
   } else if (root_node_index < 0) {
-    std::cout << sym_table.get_key(-root_node_index).get_value() << " ";
+    std::cout << sym_table.get_key(-root_node_index).value() << " ";
   } else if (root_node_index > 0) {
     if (start_list) {
       std::cout << "( ";

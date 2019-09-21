@@ -10,7 +10,7 @@ token tokenizer::get_token()
   strip_whitespace();
 
   if (stream.peek_char() == '\0') {
-    return token::nil_token;
+    return token::nil;
   }
 
   ++index;
@@ -21,23 +21,23 @@ token tokenizer::get_token()
 
   std::string raw_tok = get_from_stream();
 
-  auto t = token::nil_token;
+  auto t = token::nil;
   if (raw_tok.empty()) {
-    t = token::nil_token;
+    t = token::nil;
   } else if (raw_tok == "(") {
-    t = parenthesis::left;
+    t = token::left_paren;
   } else if (raw_tok == ")") {
-    t = parenthesis::right;
+    t = token::right_paren;
   } else if (raw_tok == "define") {
-    t = keyword::define;
+    t = token::define;
   } else if (raw_tok == "lambda") {
-    t = keyword::lambda;
+    t = token::lambda;
   } else if (raw_tok == "if") {
-    t = keyword::_if;
+    t = token::if_t;
   } else if (raw_tok == "cond") {
-    t = keyword::cond;
+    t = token::cond;
   } else {
-    t = variable(raw_tok);
+    t = token(raw_tok, token_type::variable);
   }
 
   tl.append(t);

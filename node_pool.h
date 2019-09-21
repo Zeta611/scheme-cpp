@@ -9,7 +9,7 @@ public:
   ~node_pool();
 
   bool is_empty();
-  int get_size();
+  int size();
   node& get_node(int index);
   int get_free_head_index();
   int allocate();
@@ -21,7 +21,7 @@ private:
   node* nodes;
   int free_head_index = 1;
   int capacity;
-  int size = 0;
+  int _size = 0;
   void reserve_capacity(int minimum_capacity);
 };
 

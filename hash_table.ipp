@@ -1,7 +1,7 @@
 template<typename T>
-int hash_table<T>::get_count()
+int hash_table<T>::count()
 {
-  return count;
+  return _count;
 }
 
 template<typename T>
@@ -55,7 +55,7 @@ int hash_table<T>::insert(token key, T element)
     if (bk == nullptr) {
       bk = new bucket;
       bk->key = key;
-      ++count;
+      ++_count;
     }
 
     // `bk` with such `key` exists, so update `bk` with the pair.
@@ -83,7 +83,7 @@ int hash_table<T>::insert(token key)
     if (bk == nullptr) {
       bk = new bucket;
       bk->key = key;
-      ++count;
+      ++_count;
     }
 
     // `bk` with such `key` exists, so update `bk` with the pair.
@@ -99,7 +99,7 @@ template<typename T>
 int hash_table<T>::hash(token t)
 {
   int value = 0;
-  for (auto c : t.get_value()) {
+  for (auto c : t.value()) {
     value += (int)c;
   }
   return value;
@@ -128,7 +128,7 @@ std::ostream& operator<<(std::ostream& stream, const hash_table<T>& table)
       stream << "|"
              << center(i_str, 16)
              << "|"
-             << center(bk->key.get_value(), 16)
+             << center(bk->key.value(), 16)
              << "|\n";
     }
   }
