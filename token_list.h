@@ -2,7 +2,7 @@
 #define TOKEN_LIST_H
 #include "token.h"
 
-class token_node;
+struct token_node;
 
 class token_list {
 public:

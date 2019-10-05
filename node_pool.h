@@ -2,7 +2,8 @@
 #define NODE_POOL_H
 #include <iosfwd>
 
-class node;
+struct node;
+
 class node_pool {
 public:
   node_pool(int capacity);
