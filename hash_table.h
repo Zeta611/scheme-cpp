@@ -3,7 +3,6 @@
 #include <iostream>
 #include "token.h"
 
-template<typename T>
 class hash_table {
 public:
   /**
@@ -23,7 +22,7 @@ public:
    * - Complexity: O(1) expected, worst case O(*n*), where *n* is the size of
    *   the hash table.
    */
-  T get(token key);
+  int get(token key);
 
   /**
    * Gets the key for the given `hash_value`.
@@ -69,15 +68,14 @@ public:
    * - Complexity: O(1) expected, worst case O(*n*), where *n* is the size of
    *   the hash table.
    */
-  int insert(token key, T element);
+  int insert(token key, int element);
 
   struct bucket {
     token key{token::nil};
-    T element;
+    int element;
   };
 
-  template <typename U>
-  friend std::ostream& operator<<(std::ostream&, const hash_table<U>&);
+  friend std::ostream& operator<<(std::ostream&, const hash_table&);
 
 private:
   const int size;
@@ -88,5 +86,4 @@ private:
   int hash(token tok);
 };
 
-#include "hash_table.ipp"
 #endif /* ifndef HASH_TABLE_H */

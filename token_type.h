@@ -5,7 +5,9 @@ enum class token_type {
   paren,
   keyword,
   variable,
+  number,
   literal,
+  boolean,
   nil
 };
 

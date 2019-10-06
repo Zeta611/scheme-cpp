@@ -29,6 +29,10 @@ token tokenizer::get_token()
     t = token::left_paren;
   } else if (raw_tok == ")") {
     t = token::right_paren;
+  } else if (raw_tok == "quote") {
+    t = token::quote;
+  } else if (raw_tok == "'") {
+    t = token::quote_lit;
   } else if (raw_tok == "define") {
     t = token::define;
   } else if (raw_tok == "lambda") {
@@ -37,6 +41,30 @@ token tokenizer::get_token()
     t = token::if_t;
   } else if (raw_tok == "cond") {
     t = token::cond;
+  } else if (raw_tok == "else") {
+    t = token::else_t;
+  } else if (raw_tok == "+") {
+    t = token::plus;
+  } else if (raw_tok == "-") {
+    t = token::minus;
+  } else if (raw_tok == "*") {
+    t = token::times;
+  } else if (raw_tok == "number?") {
+    t = token::is_number;
+  } else if (raw_tok == "symbol?") {
+    t = token::is_symbol;
+  } else if (raw_tok == "null?") {
+    t = token::is_null;
+  } else if (raw_tok == "#t") {
+    t = token::true_t;
+  } else if (raw_tok == "#f") {
+    t = token::false_t;
+  } else if (raw_tok == "cons") {
+    t = token::cons;
+  } else if (raw_tok == "car") {
+    t = token::car;
+  } else if (raw_tok == "cdr") {
+    t = token::cdr;
   } else {
     t = token(raw_tok, token_type::variable);
   }

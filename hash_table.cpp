@@ -1,26 +1,25 @@
-template<typename T>
-int hash_table<T>::count()
+#include <iostream>
+#include "hash_table.h"
+
+int hash_table::count()
 {
   return _count;
 }
 
-template<typename T>
-hash_table<T>::hash_table(int size)
+hash_table::hash_table(int size)
   : size{size}
 {
   table = new bucket*[size]();
 }
 
 
-template<typename T>
-hash_table<T>::~hash_table()
+hash_table::~hash_table()
 {
   delete [] table;
 }
 
 
-template<typename T>
-T hash_table<T>::get(token key)
+int hash_table::get(token key)
 {
   int hash_value = hash(key);
 
@@ -33,15 +32,13 @@ T hash_table<T>::get(token key)
 }
 
 
-template<typename T>
-token hash_table<T>::get_key(int hash_value)
+token hash_table::get_key(int hash_value)
 {
   return table[hash_value]->key;
 }
 
 
-template<typename T>
-int hash_table<T>::insert(token key, T element)
+int hash_table::insert(token key, int element)
 {
   int hash_value = hash(key);
 
@@ -68,8 +65,7 @@ int hash_table<T>::insert(token key, T element)
 }
 
 
-template<typename T>
-int hash_table<T>::insert(token key)
+int hash_table::insert(token key)
 {
   int hash_value = hash(key);
 
@@ -86,7 +82,7 @@ int hash_table<T>::insert(token key)
       ++_count;
     }
 
-    // `bk` with such `key` exists, so update `bk` with the pair.
+    // `bk` with such `key` exists.
     if (key == bk->key) {
       return index;
     }
@@ -95,8 +91,7 @@ int hash_table<T>::insert(token key)
 }
 
 
-template<typename T>
-int hash_table<T>::hash(token t)
+int hash_table::hash(token t)
 {
   int value = 0;
   for (auto c : t.value()) {
@@ -106,8 +101,7 @@ int hash_table<T>::hash(token t)
 }
 
 
-template<typename T>
-std::ostream& operator<<(std::ostream& stream, const hash_table<T>& table)
+std::ostream& operator<<(std::ostream& stream, const hash_table& table)
 {
   auto center = [=](std::string input, int width) {
     auto left_pad = std::string((width - input.length()) / 2, ' ');
@@ -118,20 +112,26 @@ std::ostream& operator<<(std::ostream& stream, const hash_table<T>& table)
   };
 
   stream << "Hash Table =\n"
-         << "+----------------+----------------+\n"
-         << "|   Hash Value   |     Symbol     |\n"
-         << "+----------------+----------------+\n";
+         << "+------------+----------+--------+\n"
+         << "| Hash Value |  Symbol  |  Link  |\n"
+         << "+------------+----------+--------+\n";
   for (int i = 0; i < table.size; ++i) {
     auto bk = table.table[i];
     if (bk != nullptr) {
       auto i_str = std::to_string(-i);
+
+      int link = bk->element;
+      auto link_str = link == 0 ? "nil" : std::to_string(link);
+
       stream << "|"
-             << center(i_str, 16)
+             << center(i_str, 12)
              << "|"
-             << center(bk->key.value(), 16)
+             << center(bk->key.value(), 10)
+             << "|"
+             << center(link_str, 8)
              << "|\n";
     }
   }
-  stream << "+----------------+----------------+\n";
+  stream << "+------------+----------+--------+\n";
   return stream;
 }

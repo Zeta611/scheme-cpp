@@ -13,11 +13,13 @@ public:
   static const token right_paren;
 
   static const token quote;
+  static const token quote_lit;
 
   static const token define;
   static const token lambda;
-  static const token cond;
   static const token if_t;
+  static const token cond;
+  static const token else_t;
 
   static const token plus;
   static const token minus;
@@ -26,6 +28,16 @@ public:
 
   static const token eq;
   static const token equal;
+  static const token is_number;
+  static const token is_symbol;
+  static const token is_null;
+
+  static const token true_t;
+  static const token false_t;
+
+  static const token cons;
+  static const token car;
+  static const token cdr;
 
   static const token nil;
 
