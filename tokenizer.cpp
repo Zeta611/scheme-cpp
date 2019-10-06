@@ -1,3 +1,4 @@
+#include <cassert>
 #include "tokenizer.h"
 #include "utils.h"
 

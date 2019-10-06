@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cassert>
 #include "node.h"
 #include "interpreter.h"
 
