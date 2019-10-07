@@ -3,7 +3,6 @@
 
 token_list::~token_list()
 {
-
   auto current = head;
   while (current != nullptr) {
     auto temp = current;

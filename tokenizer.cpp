@@ -65,6 +65,8 @@ token tokenizer::get_token()
     t = token::car;
   } else if (raw_tok == "cdr") {
     t = token::cdr;
+  } else if (utils::is_number(raw_tok)) {
+    t = token(raw_tok, token_type::number);
   } else {
     t = token(raw_tok, token_type::variable);
   }
@@ -98,8 +100,8 @@ std::string tokenizer::get_from_stream()
       return buffer;
       break;
 
-    case '(': case ')':
-      // Return parenthesis if it is found in the first loop.
+    case '(': case ')': case '\'':
+      // Return parenthesis/quotation if it is found in the first loop.
       if (init_loop) {
         buffer.push_back(stream.get_char());
       }

@@ -4,6 +4,7 @@
 #include "tokenizer.h"
 #include "node_pool.h"
 #include "hash_table.h"
+#include "call_stack.h"
 
 class interpreter {
 public:
@@ -13,6 +14,7 @@ private:
   tokenizer tok = tokenizer(string_stream(""));
   node_pool pool = node_pool(30);
   hash_table sym_table = hash_table(997);
+  call_stack stack = call_stack(100);
 
   /**
    * Recursively replaces functions and literals to process.

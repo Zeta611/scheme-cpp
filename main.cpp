@@ -1,5 +1,4 @@
 #include "interpreter.h"
-// #define NDEBUG
 #ifndef NDEBUG
 #include "test.h"
 #endif
