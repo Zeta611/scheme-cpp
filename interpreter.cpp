@@ -21,13 +21,19 @@ void interpreter::run()
     tok.stream.flush();
     tok.stream.insert_str(new_cmd);
 
-    int root_node_index = read();
-    int result = eval(root_node_index);
-    print(result, true);
+    try {
+      int root_node_index = read();
+      int result = eval(root_node_index);
+      print(result, true);
+
 #ifndef NDEBUG
-    std::cout << "\n";
-    print_meta(root_node_index);
+      std::cout << "\n";
+      print_meta(root_node_index);
 #endif
+    } catch (const std::exception& e) {
+      std::cout << e.what() << "\n";
+      continue;
+    }
 
     if (tok.stream.is_at_end()) {
       tok.stream.flush();
@@ -232,6 +238,11 @@ int interpreter::eval(int root_node_index)
   // lchild represents a predefined token.
   auto t = sym_table.get_key(-lchild);
   if (t == token::plus || t == token::minus || t == token::times) {
+    // Throw if more than two operands are given.
+    if (root.rchild(pool).rchild(pool).right != 0) {
+      throw std::runtime_error("Syntax error: too much operands.");
+    }
+
     int lop_hash = eval(root.rchild(pool).left);
     int rop_hash = eval(root.rchild(pool).rchild(pool).left);
 
@@ -276,6 +287,11 @@ int interpreter::eval(int root_node_index)
       throw std::runtime_error("Type error: not a number.");
     }
   } else if (t == token::is_number) {
+    // Throw if more than one operand are given.
+    if (root.rchild(pool).right != 0) {
+      throw std::runtime_error("Syntax error: too much operands.");
+    }
+
     int op_hash = eval(root.rchild(pool).left);
     if (op_hash > 0) {
       return -sym_table.insert(token::false_t);
@@ -285,6 +301,11 @@ int interpreter::eval(int root_node_index)
     return -sym_table.insert(bool_t);
 
   } else if (t == token::is_symbol) {
+    // Throw if more than one operand are given.
+    if (root.rchild(pool).right != 0) {
+      throw std::runtime_error("Syntax error: too much operands.");
+    }
+
     int op_hash = eval(root.rchild(pool).left);
 
     if (op_hash <= 0) {
@@ -299,6 +320,11 @@ int interpreter::eval(int root_node_index)
     return -sym_table.insert(token::false_t);
 
   } else if (t == token::is_null) {
+    // Throw if more than one operand are given.
+    if (root.rchild(pool).right != 0) {
+      throw std::runtime_error("Syntax error: too much operands.");
+    }
+
     int op_hash = root.rchild(pool).left;
     auto bool_t = token::true_t;
     if (eval(op_hash) == 0) {
@@ -309,6 +335,11 @@ int interpreter::eval(int root_node_index)
     return -sym_table.insert(bool_t);
 
   } else if (t == token::cons) {
+    // Throw if more than two operands are given.
+    if (root.rchild(pool).rchild(pool).right != 0) {
+      throw std::runtime_error("Syntax error: too much operands.");
+    }
+
     int index = pool.allocate();
     auto& new_node = pool.get_node(index);
     new_node.left = eval(root.rchild(pool).left);
@@ -322,8 +353,17 @@ int interpreter::eval(int root_node_index)
       new_root = &pool.get_node(root_node_index);
 
       auto& cond_clause = new_root->lchild(pool);
-      if (eval(cond_clause.left) == -sym_table.insert(token::true_t)) {
+      if (cond_clause.rchild(pool).right != 0) {
+        throw std::runtime_error("Syntax error: too much operands.");
+      }
+
+      int check = eval(cond_clause.left);
+      if (check == -sym_table.insert(token::true_t)) {
         return eval(cond_clause.rchild(pool).left);
+      } else if (check == -sym_table.insert(token::false_t)) {
+        continue;
+      } else {
+        throw std::runtime_error("Type error: Boolean expected.");
       }
     }
     new_root = &pool.get_node(root_node_index);
@@ -331,17 +371,39 @@ int interpreter::eval(int root_node_index)
     if (last_hash >= 0 || sym_table.get_key(-last_hash) != token::else_t) {
       throw std::runtime_error("Syntax error: else required.");
     }
+
+    if (new_root->rchild(pool).lchild(pool).rchild(pool).right != 0) {
+      throw std::runtime_error("Syntax error: too much operands.");
+    }
     return eval(new_root->rchild(pool).lchild(pool).rchild(pool).left);
 
   } else if (t == token::car) {
-    int operand = root.rchild(pool).left;
-    return pool.get_node(eval(operand)).left;
+    if (root.rchild(pool).right != 0) {
+      throw std::runtime_error("Syntax error: too much operands.");
+    }
+
+    int operand = eval(root.rchild(pool).left);
+    if (operand == 0) {
+      throw std::runtime_error("Syntax error: list is empty.");
+    }
+    return pool.get_node(operand).left;
 
   } else if (t == token::cdr) {
-    int operand = root.rchild(pool).left;
-    return pool.get_node(eval(operand)).right;
+    if (root.rchild(pool).right != 0) {
+      throw std::runtime_error("Syntax error: too much operands.");
+    }
+
+    int operand = eval(root.rchild(pool).left);
+    if (operand == 0) {
+      throw std::runtime_error("Syntax error: list is empty.");
+    }
+    return pool.get_node(operand).right;
 
   } else if (t == token::define) {
+    if (root.rchild(pool).rchild(pool).right != 0) {
+      throw std::runtime_error("Syntax error: too much operands.");
+    }
+
     int op_hash = root.rchild(pool).left;
     auto op_tok = sym_table.get_key(-op_hash);
     int def = eval(root.rchild(pool).rchild(pool).left);
