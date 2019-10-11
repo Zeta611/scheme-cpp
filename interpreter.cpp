@@ -172,6 +172,18 @@ int interpreter::eval(int root_node_index)
       throw std::runtime_error("Syntax error: function required.");
     }
 
+    // Check if parameter/argument list is empty.
+    bool empty_param = link_node.rchild(pool).left == 0;
+    bool empty_arg = root.right == 0;
+
+    if (empty_param && empty_arg) {
+      return eval(link_node.rchild(pool).rchild(pool).left);
+    } else if (empty_param) {
+      throw std::runtime_error("Syntax error: more arguments provided.");
+    } else if (empty_arg) {
+      throw std::runtime_error("Syntax error: more arguments required.");
+    }
+
     auto* param_node = &link_node.rchild(pool).lchild(pool);
     auto* arg_node = &root.rchild(pool);
     int param_cnt = 0;
