@@ -12,8 +12,8 @@ public:
 
 private:
   tokenizer tok = tokenizer(string_stream(""));
-  node_pool pool = node_pool(1000);
-  hash_table sym_table = hash_table(997);
+  node_pool pool = node_pool(30);
+  hash_table sym_table = hash_table(1031);
   call_stack stack = call_stack(100);
 
   /**

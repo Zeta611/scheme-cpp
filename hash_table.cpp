@@ -1,5 +1,6 @@
 #include <iostream>
 #include "hash_table.h"
+#include "utils.h"
 
 int hash_table::count()
 {
@@ -95,7 +96,7 @@ int hash_table::hash(token t)
 {
   int value = 0;
   for (auto c : t.value()) {
-    value += (int)c;
+    value += (int)(c * c);
   }
   return value;
 }
@@ -103,14 +104,6 @@ int hash_table::hash(token t)
 
 std::ostream& operator<<(std::ostream& stream, const hash_table& table)
 {
-  auto center = [=](std::string input, int width) {
-    auto left_pad = std::string((width - input.length()) / 2, ' ');
-    auto right_pad = std::string(
-      (width - input.length()) / 2 + (width - input.length()) % 2,
-      ' ');
-    return left_pad + input + right_pad;
-  };
-
   stream << "Hash Table =\n"
          << "+------------+----------+--------+\n"
          << "| Hash Value |  Symbol  |  Link  |\n"
@@ -124,11 +117,11 @@ std::ostream& operator<<(std::ostream& stream, const hash_table& table)
       auto link_str = link == 0 ? "nil" : std::to_string(link);
 
       stream << "|"
-             << center(i_str, 12)
+             << utils::center_align(i_str, 12)
              << "|"
-             << center(bk->key.value(), 10)
+             << utils::center_align(bk->key.value(), 10)
              << "|"
-             << center(link_str, 8)
+             << utils::center_align(link_str, 8)
              << "|\n";
     }
   }

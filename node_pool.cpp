@@ -1,4 +1,5 @@
 #include <iostream>
+#include "utils.h"
 #include "node.h"
 #include "node_pool.h"
 
@@ -108,14 +109,6 @@ void node_pool::reserve_capacity(int minimum_capacity)
 
 std::ostream& operator<<(std::ostream& stream, const node_pool& pool)
 {
-  auto center = [=](std::string input, int width) {
-    auto left_pad = std::string((width - input.length()) / 2, ' ');
-    auto right_pad = std::string(
-      (width - input.length()) / 2 + (width - input.length()) % 2,
-      ' ');
-    return left_pad + input + right_pad;
-  };
-
   stream << "Memory Table =\n"
          << "+-----+-------------+-------------+\n"
          << "|  i  |  Left Value | Right Value |\n"
@@ -140,11 +133,11 @@ std::ostream& operator<<(std::ostream& stream, const node_pool& pool)
     }
 
     stream << "|"
-           << center(i_str, 5)
+           << utils::center_align(i_str, 5)
            << "|"
-           << center(left, 13)
+           << utils::center_align(left, 13)
            << "|"
-           << center(right, 13)
+           << utils::center_align(right, 13)
            << "|\n";
   }
   stream << "+-----+-------------+-------------+\n";

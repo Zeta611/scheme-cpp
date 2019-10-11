@@ -39,4 +39,13 @@ namespace utils
   {
     return is_integer(s) || is_float(s);
   }
+
+
+  std::string center_align(const std::string& s, int width)
+  {
+    int len = s.length();
+    auto left_pad = std::string((width - len) / 2, ' ');
+    auto right_pad = std::string((width - len) / 2 + (width - len) % 2, ' ');
+    return left_pad + s + right_pad;
+  }
 }
