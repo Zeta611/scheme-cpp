@@ -44,6 +44,8 @@ namespace utils
   std::string center_align(const std::string& s, int width)
   {
     int len = s.length();
+    if (len > width) { return s.substr(0, width - 3) + "..."; }
+
     auto left_pad = std::string((width - len) / 2, ' ');
     auto right_pad = std::string((width - len) / 2 + (width - len) % 2, ' ');
     return left_pad + s + right_pad;
