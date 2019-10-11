@@ -22,6 +22,7 @@ void interpreter::run()
     try {
       int root_node_index = read();
       int result = eval(root_node_index);
+      std::cout << "] ";
       print(result, true);
 
 #ifndef NDEBUG
@@ -445,9 +446,9 @@ void interpreter::print(int root_node_index, bool start_list)
 
 void interpreter::print_meta(int root_node_index)
 {
-  std::cout << "] Free List Root = "
+  std::cout << "Free List Root = "
             << pool.get_free_head_index()
-            << "\n  Node List Root = "
+            << "\nNode List Root = "
             << root_node_index
             << "\n\n"
             << pool
