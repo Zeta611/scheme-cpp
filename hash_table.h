@@ -71,7 +71,9 @@ public:
   int insert(token key, int element);
 
   struct bucket {
-    token key{token::nil};
+    bucket();
+    bucket(token key, int element);
+    token key;
     int element;
   };
 

@@ -6,8 +6,6 @@
 
 void interpreter::run()
 {
-  sym_table.insert(token::nil);
-
   while (true) {
     std::cout << "> ";
     if (tok.stream.is_empty()) {
