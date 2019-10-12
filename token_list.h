@@ -9,9 +9,9 @@ public:
   ~token_list();
 
   void append(token t);
-  int get_size();
+  int get_size() const;
 
-  token get_current();
+  token get_current() const;
   void advance_current();
   void back_current();
 

@@ -4,7 +4,7 @@
 #include "token.h"
 #include "utils.h"
 
-int hash_table::count()
+int hash_table::count() const
 {
   return _count;
 }
@@ -44,7 +44,7 @@ hash_table::~hash_table()
 }
 
 
-int hash_table::get(token key)
+int hash_table::get(token key) const
 {
   int hash_value = hash(key);
 
@@ -57,7 +57,7 @@ int hash_table::get(token key)
 }
 
 
-token hash_table::get_key(int hash_value)
+token hash_table::get_key(int hash_value) const
 {
   return table[hash_value]->key;
 }
@@ -216,7 +216,7 @@ hash_table::bucket::bucket(token key, int element)
   : key{key}, element{element} {}
 
 
-int hash_table::hash(token t)
+int hash_table::hash(token t) const
 {
   int value = 0;
   for (auto c : t.value()) {

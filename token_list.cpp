@@ -28,13 +28,13 @@ void token_list::append(token t)
 }
 
 
-int token_list::get_size()
+int token_list::get_size() const
 {
   return size;
 }
 
 
-token token_list::get_current()
+token token_list::get_current() const
 {
   return current->t;
 }

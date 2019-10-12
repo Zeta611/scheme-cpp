@@ -5,9 +5,9 @@
 class string_stream {
 public:
   string_stream(std::string str);
-  bool is_at_end();
-  bool is_empty();
-  char peek_char();
+  bool is_at_end() const;
+  bool is_empty() const;
+  char peek_char() const;
   char get_char();
   void flush();
   void insert_str(std::string str);

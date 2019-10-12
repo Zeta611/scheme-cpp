@@ -149,105 +149,125 @@ int interpreter::read()
 
 int interpreter::eval(int root_node_index)
 {
-  // root_node_index is a token hash value.
+  // root_node_index is a (minus) token hash value.
   if (root_node_index <= 0) {
-    auto t = sym_table.get_key(-root_node_index);
-    if (t.type() == token_type::number ||
-        t.type() == token_type::boolean ||
-        t.type() == token_type::nil ||
-        t.type() == token_type::keyword) {
-      return root_node_index;
-    } else {
-      return sym_table.get(t);
-    }
+    return eval_token(-root_node_index);
   }
 
   auto& root = pool.get_node(root_node_index);
   int lchild = eval(root.left);
+
   // lchild represents a list or a user-defined function.
   if (lchild > 0) {
-    auto& link_node = pool.get_node(lchild);
-    // lchild must be a function, not a list.
-    if (sym_table.get_key(-link_node.left) != token::lambda) {
-      throw std::runtime_error("Syntax error: function required.");
-    }
-
-    // Check if parameter/argument list is empty.
-    bool empty_param = link_node.rchild(pool).left == 0;
-    bool empty_arg = root.right == 0;
-
-    if (empty_param && empty_arg) {
-      return eval(link_node.rchild(pool).rchild(pool).left);
-    } else if (empty_param) {
-      throw std::runtime_error("Syntax error: more arguments provided.");
-    } else if (empty_arg) {
-      throw std::runtime_error("Syntax error: more arguments required.");
-    }
-
-    auto* param_node = &link_node.rchild(pool).lchild(pool);
-    auto* arg_node = &root.rchild(pool);
-    int param_cnt = 0;
-    int arg_cnt = 0;
-
-    if (arg_node->left != 0) {
-      while (true) {
-        ++arg_cnt;
-        if (arg_node->right == 0) { break; }
-        arg_node = &arg_node->rchild(pool);
-      }
-    }
-    // Store evaluated argument values.
-    auto* tmp_eval = new int[arg_cnt];
-    arg_node = &root.rchild(pool);
-    for (int i = 0; i < arg_cnt; ++i) {
-      tmp_eval[i] = eval(arg_node->left);
-      arg_node = &arg_node->rchild(pool);
-    }
-
-    arg_node = &root.rchild(pool);
-    if (param_node->left != 0) {
-      while (true) {
-        // Keep original parameter values in `stack`.
-        int param_hash = param_node->left;
-        auto param_tok = sym_table.get_key(-param_hash);
-        int param_link = sym_table.get(param_tok);
-
-        stack.push(param_hash, param_link);
-        sym_table.insert(param_tok, tmp_eval[param_cnt++]);
-
-        if (param_node->right != 0) {
-          param_node = &param_node->rchild(pool);
-          if (arg_node->right == 0) {
-            throw std::runtime_error("Syntax error: more arguments required.");
-          }
-          arg_node = &arg_node->rchild(pool);
-        } else {
-          if (arg_node->right != 0) {
-            throw std::runtime_error("Syntax error: more arguments provided.");
-          }
-          break;
-        }
-      }
-    } else if (arg_node->left != 0) {
-      throw std::runtime_error("Syntax error: more arguments provided.");
-    }
-
-    delete [] tmp_eval;
-
-    int result = eval(link_node.rchild(pool).rchild(pool).left);
-
-    // Restore parameter values.
-    for (int i = 0; i < param_cnt; ++i) {
-      auto pair = stack.pop();
-      auto t = sym_table.get_key(-pair.symbol);
-      sym_table.insert(t, pair.link);
-    }
-
-    return result;
+    return eval_list_or_func(root_node_index, lchild);
   }
 
   // lchild represents a predefined token.
   auto t = sym_table.get_key(-lchild);
+  return eval_predefined(root_node_index, t);
+}
+
+
+int interpreter::eval_token(int hash_value)
+{
+  auto t = sym_table.get_key(hash_value);
+  if (t.type() == token_type::number ||
+      t.type() == token_type::boolean ||
+      t.type() == token_type::nil ||
+      t.type() == token_type::keyword) {
+    return -hash_value;
+  } else {
+    return sym_table.get(t);
+  }
+}
+
+
+int interpreter::eval_list_or_func(int root_node_index, int link_node_index)
+{
+  auto& root = pool.get_node(root_node_index);
+  auto& link_node = pool.get_node(link_node_index);
+  // `link_node_index` must be a function, not a list.
+  if (sym_table.get_key(-link_node.left) != token::lambda) {
+    throw std::runtime_error("Syntax error: function required.");
+  }
+
+  // Check if parameter/argument list is empty.
+  bool empty_param = link_node.rchild(pool).left == 0;
+  bool empty_arg = root.right == 0;
+
+  if (empty_param && empty_arg) {
+    return eval(link_node.rchild(pool).rchild(pool).left);
+  } else if (empty_param) {
+    throw std::runtime_error("Syntax error: more arguments provided.");
+  } else if (empty_arg) {
+    throw std::runtime_error("Syntax error: more arguments required.");
+  }
+
+  auto* param_node = &link_node.rchild(pool).lchild(pool);
+  auto* arg_node = &root.rchild(pool);
+  int param_cnt = 0;
+  int arg_cnt = 0;
+
+  if (arg_node->left != 0) {
+    while (true) {
+      ++arg_cnt;
+      if (arg_node->right == 0) { break; }
+      arg_node = &arg_node->rchild(pool);
+    }
+  }
+  // Store evaluated argument values.
+  auto* tmp_eval = new int[arg_cnt];
+  arg_node = &root.rchild(pool);
+  for (int i = 0; i < arg_cnt; ++i) {
+    tmp_eval[i] = eval(arg_node->left);
+    arg_node = &arg_node->rchild(pool);
+  }
+
+  arg_node = &root.rchild(pool);
+  if (param_node->left != 0) {
+    while (true) {
+      // Keep original parameter values in `stack`.
+      int param_hash = param_node->left;
+      auto param_tok = sym_table.get_key(-param_hash);
+      int param_link = sym_table.get(param_tok);
+
+      stack.push(param_hash, param_link);
+      sym_table.insert(param_tok, tmp_eval[param_cnt++]);
+
+      if (param_node->right != 0) {
+        param_node = &param_node->rchild(pool);
+        if (arg_node->right == 0) {
+          throw std::runtime_error("Syntax error: more arguments required.");
+        }
+        arg_node = &arg_node->rchild(pool);
+      } else {
+        if (arg_node->right != 0) {
+          throw std::runtime_error("Syntax error: more arguments provided.");
+        }
+        break;
+      }
+    }
+  } else if (arg_node->left != 0) {
+    throw std::runtime_error("Syntax error: more arguments provided.");
+  }
+
+  delete [] tmp_eval;
+
+  int result = eval(link_node.rchild(pool).rchild(pool).left);
+
+  // Restore parameter values.
+  for (int i = 0; i < param_cnt; ++i) {
+    auto pair = stack.pop();
+    auto t = sym_table.get_key(-pair.symbol);
+    sym_table.insert(t, pair.link);
+  }
+
+  return result;
+}
+
+int interpreter::eval_predefined(int root_node_index, token t)
+{
+  auto& root = pool.get_node(root_node_index);
   if (t == token::plus || t == token::minus || t == token::times) {
     // Throw if more than two operands are given.
     if (root.rchild(pool).rchild(pool).right != 0) {
@@ -433,7 +453,7 @@ int interpreter::eval(int root_node_index)
 }
 
 
-void interpreter::print(int root_node_index, bool start_list)
+void interpreter::print(int root_node_index, bool start_list) const
 {
   if (root_node_index == 0) {
     std::cout << "() ";
@@ -456,7 +476,7 @@ void interpreter::print(int root_node_index, bool start_list)
 }
 
 
-void interpreter::print_meta(int root_node_index)
+void interpreter::print_meta(int root_node_index) const
 {
   std::cout << "Free List Root = "
             << pool.get_free_head_index()

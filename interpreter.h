@@ -1,6 +1,7 @@
 #ifndef INTERPRETER_H
 #define INTERPRETER_H
 #include <string>
+#include "token.h"
 #include "tokenizer.h"
 #include "node_pool.h"
 #include "hash_table.h"
@@ -36,6 +37,12 @@ private:
    */
   int eval(int root_node_index);
 
+  int eval_token(int hash_value);
+
+  int eval_list_or_func(int root_node_index, int link_node_index);
+
+  int eval_predefined(int root_node_index, token t);
+
   /**
    * Recursively prints the expression starting from the root node.
    * - Parameters:
@@ -43,9 +50,9 @@ private:
    *   - start_list: A flag which indicates if the root node is at the start of
    *     the list.
    */
-  void print(int root_node_index, bool start_list);
+  void print(int root_node_index, bool start_list) const;
 
-  void print_meta(int root_node_index);
+  void print_meta(int root_node_index) const;
 };
 
 #endif /* ifndef INTERPRETER_H */

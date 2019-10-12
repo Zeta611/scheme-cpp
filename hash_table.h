@@ -11,7 +11,7 @@ public:
   hash_table(int size);
   ~hash_table();
 
-  int count();
+  int count() const;
 
   /**
    * Gets the element for the given `key`.
@@ -22,7 +22,7 @@ public:
    * - Complexity: O(1) expected, worst case O(*n*), where *n* is the size of
    *   the hash table.
    */
-  int get(token key);
+  int get(token key) const;
 
   /**
    * Gets the key for the given `hash_value`.
@@ -32,7 +32,7 @@ public:
    *   if it exists.
    * - Complexity: O(1)
    */
-  token get_key(int hash_value);
+  token get_key(int hash_value) const;
 
 
   /**
@@ -85,7 +85,7 @@ private:
 
   bucket** table;
 
-  int hash(token tok);
+  int hash(token tok) const;
 };
 
 #endif /* ifndef HASH_TABLE_H */

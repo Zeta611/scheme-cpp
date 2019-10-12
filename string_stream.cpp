@@ -4,20 +4,20 @@ string_stream::string_stream(std::string str)
   : str{str} {}
 
 
-bool string_stream::is_at_end()
+bool string_stream::is_at_end() const
 {
   return str.size() == 0 ||
     (index >= 0 && (unsigned long)index == str.size() - 1);
 }
 
 
-bool string_stream::is_empty()
+bool string_stream::is_empty() const
 {
   return str.empty();
 }
 
 
-char string_stream::peek_char()
+char string_stream::peek_char() const
 {
   if (is_empty() || is_at_end()) { return '\0'; }
   unsigned long peek_index = index >= 0 ? (unsigned long)index + 1 : 0;

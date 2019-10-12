@@ -22,25 +22,25 @@ node_pool::~node_pool()
 }
 
 
-bool node_pool::is_empty()
+bool node_pool::is_empty() const
 {
   return _size == 0;
 }
 
 
-int node_pool::size()
+int node_pool::size() const
 {
   return _size;
 }
 
 
-node& node_pool::get_node(int index)
+node& node_pool::get_node(int index) const
 {
   return nodes[index - 1];
 }
 
 
-int node_pool::get_free_head_index()
+int node_pool::get_free_head_index() const
 {
   return free_head_index;
 }

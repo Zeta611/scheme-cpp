@@ -10,13 +10,13 @@ node::node(int left, int right)
   : left{left}, right{right} {}
 
 
-node& node::lchild(node_pool& pool)
+node& node::lchild(const node_pool& pool) const
 {
   return pool.get_node(left);
 }
 
 
-node& node::rchild(node_pool& pool)
+node& node::rchild(const node_pool& pool) const
 {
   return pool.get_node(right);
 }
