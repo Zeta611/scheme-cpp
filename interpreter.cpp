@@ -270,7 +270,11 @@ int interpreter::eval_list_or_func(int root_node_index, int link_node_index)
 int interpreter::eval_predefined(int root_node_index, token t)
 {
   auto& root = pool.get_node(root_node_index);
-  if (t == token::plus || t == token::minus || t == token::times) {
+  if (t == token::plus ||
+      t == token::minus ||
+      t == token::times ||
+      t == token::eq_num)
+  {
     // Throw if more than two operands are given.
     if (root.rchild(pool).rchild(pool).right != 0) {
       throw std::runtime_error("Syntax error: too much operands.");
@@ -294,6 +298,12 @@ int interpreter::eval_predefined(int root_node_index, token t)
         value = loperand - roperand;
       } else if (t == token::times) {
         value = loperand * roperand;
+      } else if (t == token::eq_num) {
+        if (loperand == roperand) {
+          return -sym_table.insert(token::true_t);
+        } else {
+          return -sym_table.insert(token::false_t);
+        }
       }
 
       auto result = token(std::to_string(value), token_type::number);
@@ -311,6 +321,12 @@ int interpreter::eval_predefined(int root_node_index, token t)
         value = loperand - roperand;
       } else if (t == token::times) {
         value = loperand * roperand;
+      } else if (t == token::eq_num) {
+        if (loperand == roperand) {
+          return -sym_table.insert(token::true_t);
+        } else {
+          return -sym_table.insert(token::false_t);
+        }
       }
 
       auto result = token(std::to_string(value), token_type::number);
@@ -319,6 +335,107 @@ int interpreter::eval_predefined(int root_node_index, token t)
     } else {
       throw std::runtime_error("Type error: not a number.");
     }
+
+  } else if (t == token::eq) {
+    // Throw if more than two operands are given.
+    if (root.rchild(pool).rchild(pool).right != 0) {
+      throw std::runtime_error("Syntax error: too much operands.");
+    }
+
+    int lop_hash = eval(root.rchild(pool).left);
+    int rop_hash = eval(root.rchild(pool).rchild(pool).left);
+
+    if (lop_hash == rop_hash) {
+      return -sym_table.insert(token::true_t);
+    } else {
+      return -sym_table.insert(token::false_t);
+    }
+
+  } else if (t == token::eqv) {
+    // Throw if more than two operands are given.
+    if (root.rchild(pool).rchild(pool).right != 0) {
+      throw std::runtime_error("Syntax error: too much operands.");
+    }
+
+    int lop_hash = eval(root.rchild(pool).left);
+    int rop_hash = eval(root.rchild(pool).rchild(pool).left);
+
+    // `lop_hash` and `rop_hash` represent lists/functions.
+    if (lop_hash > 0 && rop_hash > 0) {
+      if (lop_hash == rop_hash) {
+        return -sym_table.insert(token::true_t);
+      } else {
+        return -sym_table.insert(token::false_t);
+      }
+
+    } else if (lop_hash <= 0 && rop_hash <= 0) {
+    // `lop_hash` and `rop_hash` represent tokens.
+      auto lop_val = sym_table.get_key(-lop_hash).value();
+      auto rop_val = sym_table.get_key(-rop_hash).value();
+
+      if (utils::is_number(lop_val) && utils::is_number(rop_val)) {
+        long double loperand = std::stold(lop_val);
+        long double roperand = std::stold(rop_val);
+        if (loperand == roperand) {
+          return -sym_table.insert(token::true_t);
+        } else {
+          return -sym_table.insert(token::false_t);
+        }
+      }
+
+      if (lop_hash == rop_hash) {
+        return -sym_table.insert(token::true_t);
+      } else {
+        return -sym_table.insert(token::false_t);
+      }
+    } else {
+      return -sym_table.insert(token::false_t);
+    }
+
+  } else if (t == token::equal) {
+    // Throw if more than two operands are given.
+    if (root.rchild(pool).rchild(pool).right != 0) {
+      throw std::runtime_error("Syntax error: too much operands.");
+    }
+
+    int lop_hash = eval(root.rchild(pool).left);
+    int rop_hash = eval(root.rchild(pool).rchild(pool).left);
+
+    // `lop_hash` and `rop_hash` represent lists/functions.
+    if (lop_hash > 0 && rop_hash > 0) {
+      auto& lnode = pool.get_node(lop_hash);
+      auto& rnode = pool.get_node(rop_hash);
+
+      if (pool.cmp_struct(lnode, rnode)) {
+        return -sym_table.insert(token::true_t);
+      } else {
+        return -sym_table.insert(token::false_t);
+      }
+
+    } else if (lop_hash <= 0 && rop_hash <= 0) {
+    // `lop_hash` and `rop_hash` represent tokens.
+      auto lop_val = sym_table.get_key(-lop_hash).value();
+      auto rop_val = sym_table.get_key(-rop_hash).value();
+
+      if (utils::is_number(lop_val) && utils::is_number(rop_val)) {
+        long double loperand = std::stold(lop_val);
+        long double roperand = std::stold(rop_val);
+        if (loperand == roperand) {
+          return -sym_table.insert(token::true_t);
+        } else {
+          return -sym_table.insert(token::false_t);
+        }
+      }
+
+      if (lop_hash == rop_hash) {
+        return -sym_table.insert(token::true_t);
+      } else {
+        return -sym_table.insert(token::false_t);
+      }
+    } else {
+      return -sym_table.insert(token::false_t);
+    }
+
   } else if (t == token::is_number) {
     // Throw if more than one operand are given.
     if (root.rchild(pool).right != 0) {

@@ -19,6 +19,8 @@ public:
   int allocate(const hash_table& sym_table);
   void deallocate(int index);
 
+  bool cmp_struct(const node& lnode, const node& rnode) const;
+
   void collect_garbage(const hash_table& sym_table);
   void set_state(int index);
   void release_busy_nodes();

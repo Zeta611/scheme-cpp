@@ -94,6 +94,38 @@ void node_pool::deallocate(int index)
 }
 
 
+bool node_pool::cmp_struct(const node& lnode, const node& rnode) const
+{
+  int l_left = lnode.left;
+  int l_right = lnode.right;
+  int r_left = rnode.left;
+  int r_right = rnode.right;
+
+  if (l_left * r_left < 0) { return false; }
+  if (l_right * r_right < 0) { return false; }
+
+  if (l_left * r_left == 0 && l_left != r_left) { return false; }
+  if (l_right * r_right == 0 && l_right != r_right) { return false; }
+
+  if (l_left < 0 && r_left < 0 && l_left != r_left) { return false; }
+  if (l_right < 0 && r_right < 0 && l_right != r_right) { return false; }
+
+  if (l_left > 0 && r_left > 0) {
+    if (!cmp_struct(lnode.lchild(*this), rnode.lchild(*this))) {
+      return false;
+    }
+  }
+
+  if (l_right > 0 && r_right > 0) {
+    if (!cmp_struct(lnode.rchild(*this), rnode.rchild(*this))) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+
 void node_pool::collect_garbage(const hash_table& sym_table)
 {
 #ifndef NDEBUG

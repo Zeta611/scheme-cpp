@@ -26,7 +26,9 @@ public:
   static const token times;
   static const token divide;
 
+  static const token eq_num;
   static const token eq;
+  static const token eqv;
   static const token equal;
   static const token is_number;
   static const token is_symbol;

@@ -49,6 +49,14 @@ token tokenizer::get_token()
     t = token::minus;
   } else if (raw_tok == "*") {
     t = token::times;
+  } else if (raw_tok == "=") {
+    t = token::eq_num;
+  } else if (raw_tok == "eq?") {
+    t = token::eq;
+  } else if (raw_tok == "eqv?") {
+    t = token::eqv;
+  } else if (raw_tok == "equal?") {
+    t = token::equal;
   } else if (raw_tok == "number?") {
     t = token::is_number;
   } else if (raw_tok == "symbol?") {

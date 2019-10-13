@@ -32,7 +32,9 @@ const token token::minus = token("-", token_type::keyword);
 const token token::times = token("*", token_type::keyword);
 const token token::divide = token("/", token_type::keyword);
 
+const token token::eq_num = token("=", token_type::keyword);
 const token token::eq = token("eq?", token_type::keyword);
+const token token::eqv = token("eqv?", token_type::keyword);
 const token token::equal = token("equal?", token_type::keyword);
 const token token::is_number = token("number?", token_type::keyword);
 const token token::is_symbol = token("symbol?", token_type::keyword);
