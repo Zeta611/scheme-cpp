@@ -19,7 +19,7 @@ public:
   friend std::ostream& operator<<(std::ostream&, const node_pool&);
 
 private:
-  node* nodes;
+  node** nodes;
   int free_head_index = 1;
   int capacity;
   int _size = 0;

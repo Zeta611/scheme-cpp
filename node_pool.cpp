@@ -6,18 +6,21 @@
 node_pool::node_pool(int capacity)
   : capacity{capacity}
 {
-  nodes = new node[capacity];
+  nodes = new node*[capacity];
   for (int i = 0; i < capacity; ++i) {
-    auto& node = nodes[i];
-    node.left = 0;
-    node.right = i + 2;
+    nodes[i] = new node();
+    nodes[i]->left = 0;
+    nodes[i]->right = i + 2;
   }
-  nodes[capacity - 1].right = 0;
+  nodes[capacity - 1]->right = 0;
 }
 
 
 node_pool::~node_pool()
 {
+  for (int i = 0; i < capacity; ++i) {
+    delete nodes[i];
+  }
   delete [] nodes;
 }
 
@@ -36,7 +39,7 @@ int node_pool::size() const
 
 node& node_pool::get_node(int index) const
 {
-  return nodes[index - 1];
+  return *nodes[index - 1];
 }
 
 
@@ -83,17 +86,17 @@ void node_pool::deallocate(int index)
 
 void node_pool::reserve_capacity(int minimum_capacity)
 {
-  auto new_nodes = new node[minimum_capacity];
+  auto new_nodes = new node*[minimum_capacity];
 
   for (int i = 0; i < capacity; ++i) {
     new_nodes[i] = nodes[i];
   }
   for (int i = capacity; i < minimum_capacity; ++i) {
-    auto& node = new_nodes[i];
-    node.left = 0;
-    node.right = i + 2;
+    new_nodes[i] = new node();
+    new_nodes[i]->left = 0;
+    new_nodes[i]->right = i + 2;
   }
-  new_nodes[minimum_capacity - 1].right = 0;
+  new_nodes[minimum_capacity - 1]->right = 0;
 
   delete [] nodes;
   nodes = new_nodes;
@@ -115,7 +118,7 @@ std::ostream& operator<<(std::ostream& stream, const node_pool& pool)
          << "+-----+-------------+-------------+\n";
 
   for (int i = 0; i < pool.capacity; ++i) {
-    auto node = pool.nodes[i];
+    auto node = *pool.nodes[i];
     auto i_str = std::to_string(i + 1);
 
     std::string left;
