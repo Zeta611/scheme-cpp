@@ -4,7 +4,7 @@
 enum class node_state {
   empty,
   pending,
-  purgeable,
+  busy,
   occupied
 };
 

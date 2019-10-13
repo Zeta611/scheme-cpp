@@ -43,6 +43,8 @@ private:
 
   int eval_predefined(int root_node_index, token t);
 
+  void post_process();
+
   /**
    * Recursively prints the expression starting from the root node.
    * - Parameters:

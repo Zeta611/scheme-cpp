@@ -67,15 +67,17 @@ int node_pool::allocate(const hash_table& sym_table)
 
   free_head_index = node.right;
   node.right = 0;
-  node.state = node_state::pending;
+  node.state = node_state::busy;
   return index;
 }
 
 
 void node_pool::deallocate(int index)
 {
-  --_size;
   auto& node = get_node(index);
+  if (node.state != node_state::pending) { return; }
+
+  --_size;
 
   if (node.right > 0) {
     deallocate(node.right);
@@ -105,11 +107,21 @@ void node_pool::collect_garbage(const hash_table& sym_table)
     if (link > 0) { set_state(link); }
   }
 
-  // Set the state of the rest of the non-empty nodes to `purgeable`.
-  for (int i = 0; i < capacity; ++i) {
-    auto& node = *nodes[i];
-    if (node.state == node_state::pending) {
-      node.state = node_state::purgeable;
+  // Deallocate rest of the non-empty nodes.
+  for (int i = 1; i <= capacity; ++i) {
+    if (get_node(i).state == node_state::pending) {
+      deallocate(i);
+    }
+  }
+}
+
+
+void node_pool::release_busy_nodes()
+{
+  for (int i = 1; i <= capacity; ++i) {
+    auto& node = get_node(i);
+    if (node.state == node_state::busy) {
+      node.state = node_state::pending;
     }
   }
 }
@@ -187,8 +199,8 @@ std::ostream& operator<<(std::ostream& stream, const node_pool& pool)
     case node_state::pending:
       state = "pending";
       break;
-    case node_state::purgeable:
-      state = "purgeable";
+    case node_state::busy:
+      state = "busy";
       break;
     case node_state::occupied:
       state = "occupied";

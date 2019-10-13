@@ -22,6 +22,7 @@ void interpreter::run()
     try {
       int root_node_index = read();
       int result = eval(root_node_index);
+      pool.release_busy_nodes();
       std::cout << "] ";
       print(result, true);
 
@@ -117,7 +118,7 @@ int interpreter::read()
       throw std::runtime_error("Symbol table is full.");
     }
 
-    // Allocate a new node, and set `currentNodeIndex` as the index of it.
+    // Allocate a new node, and set `current_node_index` as the index of it.
     int index = pool.allocate(sym_table);
     if (is_root_node) {
       root_node_index = index;
@@ -220,6 +221,7 @@ int interpreter::eval_list_or_func(int root_node_index, int link_node_index)
   arg_node = &root.rchild(pool);
   for (int i = 0; i < arg_cnt; ++i) {
     tmp_eval[i] = eval(arg_node->left);
+    if (arg_node->right == 0) { break; }
     arg_node = &arg_node->rchild(pool);
   }
 

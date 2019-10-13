@@ -21,6 +21,7 @@ public:
 
   void collect_garbage(const hash_table& sym_table);
   void set_state(int index);
+  void release_busy_nodes();
 
   friend std::ostream& operator<<(std::ostream&, const node_pool&);
 
