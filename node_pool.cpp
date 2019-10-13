@@ -1,7 +1,9 @@
 #include <iostream>
 #include "utils.h"
+#include "node_state.h"
 #include "node.h"
 #include "node_pool.h"
+#include "hash_table.h"
 
 node_pool::node_pool(int capacity)
   : capacity{capacity}
@@ -49,8 +51,12 @@ int node_pool::get_free_head_index() const
 }
 
 
-int node_pool::allocate()
+int node_pool::allocate(const hash_table& sym_table)
 {
+  if (_size == capacity - 1) {
+    collect_garbage(sym_table);
+  }
+
   if (_size == capacity - 1) {
     reserve_capacity(capacity * 2);
   }
@@ -61,6 +67,7 @@ int node_pool::allocate()
 
   free_head_index = node.right;
   node.right = 0;
+  node.state = node_state::pending;
   return index;
 }
 
@@ -80,7 +87,44 @@ void node_pool::deallocate(int index)
 
   node.left = 0;
   node.right = free_head_index;
+  node.state = node_state::empty;
   free_head_index = index;
+}
+
+
+void node_pool::collect_garbage(const hash_table& sym_table)
+{
+#ifndef NDEBUG
+  std::cout << "========== Garbage Collecting... ==========\n";
+#endif
+  // Set the state of the nodes referenced from `sym_table` to `occupied`.
+  for (int i = 0; i < sym_table.size; ++i) {
+    auto* bucket = sym_table.table[i];
+    if (bucket == nullptr) { continue; }
+    int link = bucket->element;
+    if (link > 0) { set_state(link); }
+  }
+
+  // Set the state of the rest of the non-empty nodes to `purgeable`.
+  for (int i = 0; i < capacity; ++i) {
+    auto& node = *nodes[i];
+    if (node.state == node_state::pending) {
+      node.state = node_state::purgeable;
+    }
+  }
+}
+
+
+void node_pool::set_state(int index)
+{
+  auto& node = get_node(index);
+  node.state = node_state::occupied;
+
+  int left = node.left;
+  if (left > 0) { set_state(left); }
+
+  int right = node.right;
+  if (right > 0) { set_state(right); }
 }
 
 
@@ -113,9 +157,9 @@ void node_pool::reserve_capacity(int minimum_capacity)
 std::ostream& operator<<(std::ostream& stream, const node_pool& pool)
 {
   stream << "Memory Table =\n"
-         << "+-----+-------------+-------------+\n"
-         << "|  i  |  Left Value | Right Value |\n"
-         << "+-----+-------------+-------------+\n";
+         << "+-----+-------------+-------------+-----------+\n"
+         << "|  i  |  Left Value | Right Value |   State   |\n"
+         << "+-----+-------------+-------------+-----------+\n";
 
   for (int i = 0; i < pool.capacity; ++i) {
     auto node = *pool.nodes[i];
@@ -135,14 +179,32 @@ std::ostream& operator<<(std::ostream& stream, const node_pool& pool)
       right = std::to_string(node.right);
     }
 
+    std::string state;
+    switch (node.state) {
+    case node_state::empty:
+      state = "empty";
+      break;
+    case node_state::pending:
+      state = "pending";
+      break;
+    case node_state::purgeable:
+      state = "purgeable";
+      break;
+    case node_state::occupied:
+      state = "occupied";
+      break;
+    }
+
     stream << "|"
            << utils::center_align(i_str, 5)
            << "|"
            << utils::center_align(left, 13)
            << "|"
            << utils::center_align(right, 13)
+           << "|"
+           << utils::center_align(state, 11)
            << "|\n";
   }
-  stream << "+-----+-------------+-------------+\n";
+  stream << "+-----+-------------+-------------+-----------+\n";
   return stream;
 }

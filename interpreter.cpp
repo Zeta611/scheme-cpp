@@ -118,7 +118,7 @@ int interpreter::read()
     }
 
     // Allocate a new node, and set `currentNodeIndex` as the index of it.
-    int index = pool.allocate();
+    int index = pool.allocate(sym_table);
     if (is_root_node) {
       root_node_index = index;
       is_root_node = false;
@@ -371,7 +371,7 @@ int interpreter::eval_predefined(int root_node_index, token t)
       throw std::runtime_error("Syntax error: too much operands.");
     }
 
-    int index = pool.allocate();
+    int index = pool.allocate(sym_table);
     auto& new_node = pool.get_node(index);
     new_node.left = eval(root.rchild(pool).left);
     new_node.right = eval(root.rchild(pool).rchild(pool).left);

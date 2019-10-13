@@ -2,6 +2,7 @@
 #define HASH_TABLE_H
 #include <iostream>
 #include "token.h"
+#include "node_pool.h"
 
 class hash_table {
 public:
@@ -78,6 +79,7 @@ public:
   };
 
   friend std::ostream& operator<<(std::ostream&, const hash_table&);
+  friend void node_pool::collect_garbage(const hash_table&);
 
 private:
   const int size;

@@ -31,7 +31,7 @@ token.o : token.cpp token.h token_type.h
 hash_table.o : hash_table.cpp hash_table.h token.h token_type.h utils.h
 
 node_pool.o : node_pool.cpp node.h node_pool.h utils.h
-node.o : node.cpp node.h
+node.o : node.cpp node.h node_state.h
 
 call_stack.o : call_stack.cpp call_stack.h stack_node.h
 stack_node.o : stack_node.cpp stack_node.h
