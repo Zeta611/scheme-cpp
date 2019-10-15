@@ -201,9 +201,9 @@ void node_pool::reserve_capacity(int minimum_capacity)
 std::ostream& operator<<(std::ostream& stream, const node_pool& pool)
 {
   stream << "Memory Table =\n"
-         << "+-----+-------------+-------------+-----------+\n"
-         << "|  i  |  Left Value | Right Value |   State   |\n"
-         << "+-----+-------------+-------------+-----------+\n";
+         << "┌─────┬─────────────┬─────────────┬───────────┐\n"
+         << "│  i  │  Left Value │ Right Value │   State   │\n"
+         << "╞═════╪═════════════╪═════════════╪═══════════╡\n";
 
   for (int i = 0; i < pool.capacity; ++i) {
     auto node = *pool.nodes[i];
@@ -239,16 +239,16 @@ std::ostream& operator<<(std::ostream& stream, const node_pool& pool)
       break;
     }
 
-    stream << "|"
+    stream << "│"
            << utils::center_align(i_str, 5)
-           << "|"
+           << "│"
            << utils::center_align(left, 13)
-           << "|"
+           << "│"
            << utils::center_align(right, 13)
-           << "|"
+           << "│"
            << utils::center_align(state, 11)
-           << "|\n";
+           << "│\n";
   }
-  stream << "+-----+-------------+-------------+-----------+\n";
+  stream << "└─────┴─────────────┴─────────────┴───────────┘\n";
   return stream;
 }

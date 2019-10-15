@@ -229,9 +229,9 @@ int hash_table::hash(token t) const
 std::ostream& operator<<(std::ostream& stream, const hash_table& table)
 {
   stream << "Hash Table =\n"
-         << "+------------+----------+--------+\n"
-         << "| Hash Value |  Symbol  |  Link  |\n"
-         << "+------------+----------+--------+\n";
+         << "┌────────────┬──────────┬────────┐\n"
+         << "│ Hash Value │  Symbol  │  Link  │\n"
+         << "╞════════════╪══════════╪════════╡\n";
   for (int i = 0; i < table.size; ++i) {
     auto bk = table.table[i];
     if (bk != nullptr) {
@@ -240,15 +240,15 @@ std::ostream& operator<<(std::ostream& stream, const hash_table& table)
       int link = bk->element;
       auto link_str = link == 0 ? "nil" : std::to_string(link);
 
-      stream << "|"
+      stream << "│"
              << utils::center_align(i_str, 12)
-             << "|"
+             << "│"
              << utils::center_align(bk->key.value(), 10)
-             << "|"
+             << "│"
              << utils::center_align(link_str, 8)
-             << "|\n";
+             << "│\n";
     }
   }
-  stream << "+------------+----------+--------+\n";
+  stream << "└────────────┴──────────┴────────┘\n";
   return stream;
 }
